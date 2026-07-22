@@ -1,0 +1,117 @@
+.app-shell {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  background: #0b1224;
+}
+
+.canvas-shell {
+  flex: 1;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Adjustments for panels */
+.app-shell .sidebar {
+  z-index: 100;
+}
+
+.app-shell .experiment-panel {
+  z-index: 100;
+}
+
+/* Gamification UI */
+.gamification-overlay {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  pointer-events: auto; 
+}
+
+.score-board, .objective-board, .controls-board {
+  background: rgba(15, 22, 46, 0.85);
+  border: 1px solid #60a5fa;
+  border-radius: 12px;
+  padding: 15px 25px;
+  color: #e2e8f0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  width: 320px;
+}
+
+.score-board {
+  border-color: #4ade80;
+  color: #4ade80;
+  text-align: center;
+}
+
+.score-board h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.objective-board h3 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  color: #60a5fa;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.objective-board p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.controls-board {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-color: #f472b6;
+}
+
+.btn {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.slow-btn {
+  background: #3b82f6;
+  color: white;
+}
+.slow-btn:hover:not(:disabled) { background: #2563eb; }
+
+.flick-btn {
+  background: #ef4444;
+  color: white;
+}
+.flick-btn:hover:not(:disabled) { background: #dc2626; }
+
+.reset-btn {
+  background: #4b5563;
+  color: white;
+}
+.reset-btn:hover:not(:disabled) { background: #374151; }
