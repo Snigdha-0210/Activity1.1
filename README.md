@@ -2,6 +2,8 @@
 
 This is a fully interactive, gamified 3D web application designed to demonstrate the scientific principles of **particle theory** and **dissolution**. The simulation visually proves that matter is made of particles with spaces between them.
 
+**🚀 Live Deployment:** [Play the Simulation Here](https://activity-one-one.vercel.app)
+
 ## The Experiment
 1. **Place the Glass Beaker** on the table.
 2. **Fill it with water** and mark the initial water level.
