@@ -4,6 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment";
 import { PMREMGenerator } from "three";
+import { MolecularViewSystem } from "./systems/MolecularViewSystem.js";
 import Sidebar from "./components/Sidebar.jsx";
 import "./components/Sidebar.css";
 import "./App.css";
@@ -21,6 +22,13 @@ function App() {
   // 0: Need Beaker, 1: Need Water, 2: Need Marker, 3: Need Salt, 4: Need Rod, 5: Done
   const [step, setStep] = useState(0);
   const [score, setScore] = useState(0);
+  const [tooltip, setTooltip] = useState("");
+  const [isMolecularView, setIsMolecularView] = useState(false);
+
+  const showTooltipMessage = (msg) => {
+    setTooltip(msg);
+    setTimeout(() => setTooltip(""), 8000);
+  };
 
   const getObjectiveText = () => {
     switch (step) {
@@ -40,6 +48,7 @@ function App() {
   const saltMeshRef = useRef(null);
   const rodMeshRef = useRef(null);
   const beakerSizeRef = useRef(new THREE.Vector3(1,1,1));
+  const molecularSystemRef = useRef(null);
   
   // Animation state
   const animStateRef = useRef({ type: 'IDLE', progress: 0 });
@@ -80,6 +89,9 @@ function App() {
     controls.maxPolarAngle = Math.PI / 2;
     controls.target.set(0, 0, 0);
     controls.update();
+
+    const molecularSystem = new MolecularViewSystem(scene, camera, controls);
+    molecularSystemRef.current = molecularSystem;
 
     const grid = new THREE.GridHelper(20, 20, 0x888888, 0x444444);
     grid.material.opacity = 0.5;
@@ -175,6 +187,7 @@ function App() {
              }
              setStep(5);
              setScore(s => s + 50);
+             showTooltipMessage("Discovery: The salt ions slipped into the microscopic spaces between the water molecules! The water level didn't increase.");
          }
       }
 
@@ -187,6 +200,7 @@ function App() {
       window.removeEventListener("resize", handleResize);
       renderer.domElement.removeEventListener("pointermove", updatePointerHit);
       renderer.domElement.removeEventListener("drop", handleDrop);
+      molecularSystemRef.current?.dispose();
       sceneRef.current = null;
       controls.dispose();
       renderer.dispose();
@@ -279,6 +293,7 @@ function App() {
              beakerGroupRef.current.add(group);
              saltMeshRef.current = group;
              setScore(s => s + 25);
+             showTooltipMessage("Fact: Salt crystals are composed of sodium and chloride ions that break apart in water.");
           } else if (type === 'rod') {
              // Add inside the beaker, sticking out
              group.position.set(0, beakerSizeRef.current.y * 0.2, 0);
@@ -337,6 +352,18 @@ function App() {
       
       setScore(s => s + 25);
       setStep(3);
+      showTooltipMessage("Concept Unlocked: We mark the level to establish a baseline for our volume measurement.");
+  };
+
+  const handleToggleMolecularView = () => {
+      if (!molecularSystemRef.current || !beakerGroupRef.current) return;
+      if (isMolecularView) {
+          molecularSystemRef.current.exitMolecularView();
+          setIsMolecularView(false);
+      } else {
+          molecularSystemRef.current.enterMolecularView('salt', beakerGroupRef.current.position, 50);
+          setIsMolecularView(true);
+      }
   };
 
   const handleDragStart = (e, componentData) => {
@@ -362,8 +389,11 @@ function App() {
 
       {/* Gamification Overlay */}
       <div className="gamification-overlay">
+         <div className="progress-container">
+            <div className="progress-bar" style={{ width: `${(step / 5) * 100}%` }}></div>
+         </div>
          <div className="score-board">
-            <h2>Score: {score}</h2>
+            <h2>Score: <span className="score-value">{score}</span></h2>
          </div>
          <div className="objective-board">
             <h3>Step {step === 5 ? 'Completed' : step + 1}</h3>
@@ -377,8 +407,21 @@ function App() {
             {step === 2 && (
                <button className="btn flick-btn" onClick={handleMarkLevel}>Mark Water Level</button>
             )}
+            {step === 5 && (
+               <button className="btn action-btn molecular-btn" onClick={handleToggleMolecularView}>
+                  {isMolecularView ? '🔙 Return to Normal View' : '🔬 Zoom to Molecular View'}
+               </button>
+            )}
          </div>
       </div>
+      
+      {/* Tooltip Overlay */}
+      {tooltip && (
+          <div className="concept-tooltip">
+             <div className="tooltip-icon">💡</div>
+             <div className="tooltip-text">{tooltip}</div>
+          </div>
+      )}
 
       <div ref={mountRef} className="canvas-shell" />
     </div>
