@@ -223,11 +223,9 @@ function App() {
              return 1;
           } else if (currentStep === 3 && type === 'salt') {
              loadModel('/Salt.glb', type, point, currentStep);
-             setScore(s => s + 25);
              return 4;
           } else if (currentStep === 4 && type === 'rod') {
              loadModel('/Rod.glb', type, point, currentStep);
-             setScore(s => s + 25);
              return 4; // Keep at 4 until animation finishes
           }
           return currentStep; // Ignore incorrect items
@@ -256,6 +254,11 @@ function App() {
           
           model.position.copy(center).negate().multiplyScalar(scaleFactor);
           model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+          
+          if (type === 'rod') {
+             model.rotation.x = Math.PI / 2; // Rotate the rod to be vertical
+          }
+          
           model.traverse(child => { if (child.isMesh) setupMaterial(child); });
           
           const group = new THREE.Group();
@@ -275,12 +278,14 @@ function App() {
              group.position.set(0, -(beakerSizeRef.current.y * 0.4), 0);
              beakerGroupRef.current.add(group);
              saltMeshRef.current = group;
+             setScore(s => s + 25);
           } else if (type === 'rod') {
              // Add inside the beaker, sticking out
              group.position.set(0, beakerSizeRef.current.y * 0.2, 0);
              beakerGroupRef.current.add(group);
              rodMeshRef.current = group;
              animStateRef.current = { type: 'STIR', progress: 0 };
+             setScore(s => s + 25);
           }
       }, undefined, (error) => {
           console.error(`Error loading ${url}:`, error);
