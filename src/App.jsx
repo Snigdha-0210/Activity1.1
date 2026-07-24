@@ -245,7 +245,6 @@ function App() {
           box.getSize(size);
           const center = new THREE.Vector3();
           box.getCenter(center);
-          model.position.sub(center); 
           
           let scaleMultiplier = 1.0;
           if (type === 'glass_beaker') scaleMultiplier = 1.5;
@@ -254,6 +253,8 @@ function App() {
 
           const maxDim = Math.max(size.x, size.y, size.z);
           const scaleFactor = (3.0 * scaleMultiplier) / maxDim;
+          
+          model.position.copy(center).negate().multiplyScalar(scaleFactor);
           model.scale.set(scaleFactor, scaleFactor, scaleFactor);
           model.traverse(child => { if (child.isMesh) setupMaterial(child); });
           
